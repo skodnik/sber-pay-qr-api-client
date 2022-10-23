@@ -1,0 +1,17 @@
+{
+    "rq_tm": "2022-03-14T12:32:14Z",
+    "operation_date_time": "2022-03-14T12:32:42Z",
+    "operation_type": "REFUND",
+    "operation_currency": "643",
+    "tid": "20151881",
+    "auth_code": "054511",
+    "rrn": "305197054511",
+    "order_status": "REFUNDED",
+    "operation_sum": 1,
+    "id_qr": "1000100051",
+    "error_description": "",
+    "operation_id": "615d72c6069043ee841e35002a1b28a9",
+    "error_code": "000000",
+    "rq_uid": "6dfb018158764e93ad298638da4e39ca",
+    "order_id": "136ab66215de4e9a81b393d138859482"
+}

@@ -1,0 +1,1286 @@
+openapi: 3.0.3
+info:
+  title: Плати QR v3
+  version: 3.0.0
+  description: "Клиент направляет запрос на формирование заказа в АС Сбербанка. В\
+    \ ответ получает присвоенный Идентификатор заказа в АС Сбербанк (впоследствии\
+    \ используется в качестве ключа для инициации других операций с заказом), ссыл\
+    ку для генерации QR кода."
+
+servers:
+  - url: /qr/order/v3
+
+paths:
+  /creation:
+    post:
+      summary: "Создание заказа"
+      tags:
+        - "creation"
+      security:
+        - oauth:
+            - https://api.sberbank.ru/qr/order.create
+      parameters:
+        - name: "RqUID"
+          in: header
+          required: true
+          schema:
+            maxLength: 36
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+            type: string
+            description: Uid заявки
+            example: d0c5d5d03e074ad7ba2e2e248eef7e9c
+          description: "Уникальный идентификатор запроса"
+      requestBody:
+        required: true
+        description: "Тело запроса"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestCreation'
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCreation'
+        '400':
+          description: Client Error 400 Bad Request (Запрос не корректен)'
+        '401':
+          description: Client Error 401 Unauthorized (Приложение не авторизовано, либо некорректное значение client-id)
+        '500':
+          description: Server Error 500 Internal Server Error (Внутренняя ошибка сервера
+        '405':
+          description: "Method Not Allowed (Ошибка API gateway, не найдены операци и, поддерживающие запрошенную http-команду)"
+        '429':
+          description: "Too Many Requests (Превышен лимит отправляемых запросов)"
+        '503':
+          description: Service Unavailable (Операция не доступна)
+  /revocation:
+    post:
+      tags:
+        - "revocation"
+      summary: "Отмена заказа"
+      security:
+        - oauth:
+            - https://api.sberbank.ru/qr/order.revoke
+      parameters:
+        - name: "RqUID"
+          in: header
+          required: true
+          schema:
+            maxLength: 36
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+            type: string
+            description: Uid заявки
+            example: d0c5d5d03e074ad7ba2e2e248eef7e9c
+          description: "Уникальный идентификатор запроса"
+      requestBody:
+        required: true
+        description: "Тело запроса"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestRevoke"
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseRevoke"
+        '400':
+          description: Client Error 400 Bad Request (Запрос не корректен)'
+        '401':
+          description: Client Error 401 Unauthorized (Приложение не авторизовано, либо некорректное значение client-id)
+        '500':
+          description: Server Error 500 Internal Server Error (Внутренняя ошибка сервера
+        '405':
+          description: "Method Not Allowed (Ошибка API gateway, не найдены операци и, поддерживающие запрошенную http-команду)"
+        '429':
+          description: "Too Many Requests (Превышен лимит отправляемых запросов)"
+        '503':
+          description: Service Unavailable (Операция не доступна)
+  /status:
+    post:
+      tags:
+        - "status"
+      security:
+        - oauth:
+            - https://api.sberbank.ru/qr/order.status
+      summary: "Запрос статуса"
+      parameters:
+        - name: "RqUID"
+          in: header
+          required: true
+          schema:
+            maxLength: 36
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+            type: string
+            description: Uid заявки
+            example: d0c5d5d03e074ad7ba2e2e248eef7e9c
+          description: "Уникальный идентификатор запроса"
+      requestBody:
+        required: true
+        description: "Тело запроса"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestStatus'
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseStatus'
+        '400':
+          description: Client Error 400 Bad Request (Запрос не корректен)'
+        '401':
+          description: Client Error 401 Unauthorized (Приложение не авторизовано, либо некорректное значение client-id)
+        '500':
+          description: Server Error 500 Internal Server Error (Внутренняя ошибка сервера
+        '405':
+          description: "Method Not Allowed (Ошибка API gateway, не найдены операци и, поддерживающие запрошенную http-команду)"
+        '429':
+          description: "Too Many Requests (Превышен лимит отправляемых запросов)"
+        '503':
+          description: Service Unavailable (Операция не доступна)
+  /cancel:
+    post:
+      tags:
+        - "cancel"
+      security:
+        - oauth:
+            - https://api.sberbank.ru/qr/order.cancel
+      summary: "Отмена/возврат финансовой операции"
+      parameters:
+        - name: "RqUID"
+          in: header
+          required: true
+          schema:
+            maxLength: 36
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+            type: string
+            description: Uid заявки
+            example: d0c5d5d03e074ad7ba2e2e248eef7e9c
+          description: "Уникальный идентификатор запроса"
+      requestBody:
+        required: true
+        description: "Тело запроса"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestCancel"
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/responseCancel"
+        '400':
+          description: Client Error 400 Bad Request (Запрос не корректен)'
+        '401':
+          description: Client Error 401 Unauthorized (Приложение не авторизовано, либо некорректное значение client-id)
+        '500':
+          description: Server Error 500 Internal Server Error (Внутренняя ошибка сервера
+        '405':
+          description: "Method Not Allowed (Ошибка API gateway, не найдены операци и, поддерживающие запрошенную http-команду)"
+        '429':
+          description: "Too Many Requests (Превышен лимит отправляемых запросов)"
+        '503':
+          description: Service Unavailable (Операция не доступна)
+  /registry:
+    post:
+      tags:
+        - "Order registry"
+      summary: Запрос реестра операций
+      security:
+        - oauth:
+            - auth://qr/order.registry
+      description: Партнер запрашивает реестр заказов с детализацией по операциям за указанный период.
+      parameters:
+        - name: RqUID
+          in: header
+          required: true
+          schema:
+            maxLength: 32
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+            type: string
+            description: Uid заявки
+            example: d0c5d5d03e074ad7ba2e2e248eef7e9c
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestRegistry'
+
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseRegistry'
+        '400':
+          description: Client Error 400 Bad Request (Запрос не корректен)
+        '401':
+          description: Client Error 401 Unauthorized (Приложение не авторизовано, либо некорректное значение client-id)
+        '500':
+          description: Server Error 500 Internal Server Error (Внутренняя ошибка сервера)
+components:
+  securitySchemes:
+    oauth:
+      type: oauth2
+      description: "Все клиенты API имеют право на все действия с API. Токен передается от SberAPI"
+      flows:
+        clientCredentials:
+          tokenUrl: https://dev.api.sberbank.ru/ru/prod/tokens/v2/oauth
+          scopes:
+            https://api.sberbank.ru/qr/order.create: "Скоуп для создания заказа"
+            https://api.sberbank.ru/qr/order.revoke: "Скоуп для отмены заказа"
+            https://api.sberbank.ru/qr/order.status: "Скоуп для запроса статуса заказа"
+            https://api.sberbank.ru/qr/order.cancel: "Скоуп для запроса отмены/возврата финансовой операции"
+            auth://qr/order.registry: "Скоуп к QR Pay Registry для получения реестра заказов"
+  schemas:
+    requestCreation:
+      type: "object"
+      example:
+        rq_uid: "ac11cA1CEae1D1111dABf1fD1Bb0acAd"
+        rq_tm: "2005-08-15T15:52:01Z"
+        member_id: "000001"
+        order_number: "774635526637"
+        order_create_date: "2005-08-15T15:52:01Z"
+        order_params_type:
+          - position_name: "Water Still"
+            position_count: 10
+            position_sum: 4800
+            position_description: "Water Still"
+        id_qr: "1000100051"
+        order_sum: 48000
+        currency: "643"
+        description: "Water Still"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        member_id:
+          type: "string"
+          maxLength: 8
+          description: "Идентификатор клиента"
+          pattern: "^[0-9]{8}$"
+          example: "000001"
+        order_number:
+          type: "string"
+          maxLength: 36
+          description: "Номер заказа в CRM Клиента"
+          example: "d1c3d5d93e094ad7ba3e5e248eef7e3c"
+          pattern: "^.*$"
+        order_create_date:
+          type: "string"
+          description: "Дата/время формирования заказа"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_params_type:
+          type: "array"
+          maxItems: 100000
+          items:
+            type: "object"
+            properties:
+              position_name:
+                type: "string"
+                maxLength: 256
+                description: "Наименование товарной позиции"
+                example: "Наименование товарной позиции"
+                pattern: "^.*$"
+              position_count:
+                type: "integer"
+                minimum: 0
+                maximum: 999999
+                description: "Количество штук товарной позиции"
+                example: 2
+              position_sum:
+                type: "integer"
+                maximum: 999999999999999
+                minimum: 0
+                description: "Сумма товарной позиции в минимальных единицах валюты"
+                example: 200
+              position_description:
+                type: "string"
+                maxLength: 1024
+                pattern: "^.*$"
+                description: "Описание товарной позиции"
+                example: "Описание товарной позиции"
+            additionalProperties: false
+            description: "Описание блока с параметрами заказа"
+            required:
+              - "position_name"
+        id_qr:
+          type: "string"
+          maxLength: 36
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          example: "IdQR устройства"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+        order_sum:
+          type: "integer"
+          maximum: 999999999999999
+          minimum: 0
+          description: "Сумма заказа в минимальных единицах Валюты"
+          example: 1234
+        currency:
+          type: "string"
+          maxLength: 3
+          description: "Валюта операции, цифровой код по ISO 4217"
+          example: "643"
+          pattern: "^[0-9]*$"
+        description:
+          type: "string"
+          maxLength: 256
+          description: "Описание заказа"
+          example: "Описание заказа"
+          pattern: "^.*$"
+        sbp_member_id:
+          type: "string"
+          maxLength: 12
+          description: "Идентификатор банка-участника ПАО СберБанк в СБП. Используется в случае проведения операции через платежную систему СБП/НСПК. Константа: 100000000111 (добавляется в API v3.0.0)"
+          example: "100000000111"
+          enum: ["100000000111","110000000111"]
+      additionalProperties: false
+      description: "Запрос на создание заказа"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "member_id"
+        - "order_number"
+        - "order_create_date"
+        - "id_qr"
+        - "order_sum"
+        - "currency"
+    responseCreation:
+      type: "object"
+      example:
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        error_code: "000001"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_number:
+          type: "string"
+          maxLength: 36
+          pattern: "^.*$"
+          description: "Номер заказа в CRM Клиента"
+          example: "7523478632634"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "ID заказа в АС ППРБ.Карты"
+          example: "d1c3d5d93e094ad7ba3e5e248eef7e3c"
+        order_state:
+          type: "string"
+          maxLength: 20
+          enum: ["PAID", "CREATED", "REVERSED", "REFUNDED", "REVOKED", "DECLINED", "EXPIRED", "AUTHORIZED", "CONFIRMED", "ON_PAYMENT"]
+          description: "Статус заказа"
+          example: "PAID"
+        order_form_url:
+          type: "string"
+          maxLength: 256
+          pattern: "^http(s?):\\/\\/.+$"
+          description: "Ссылка на считывание QR code"
+          example: "Ссылка на считывание QR code"
+        error_code:
+          type: "string"
+          maxLength: 6
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Код выполнения запроса"
+          example: "Код выполнения запроса"
+        error_description:
+          type: "string"
+          minLength: 0
+          maxLength: 512
+          pattern: "^.*$"
+          description: "Описание ошибки выполнения запроса"
+          example: "Описание ошибки выполнения запроса"
+      additionalProperties: false
+      description: "Ответ на запрос по созданию заказа"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "error_code"
+    requestStatus:
+      type: "object"
+      example:
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        order_id: "000001"
+        tid: "345"
+        partner_order_number: "456"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_id:
+          type: "string"
+          maxLength: 36
+          description: "ID заказа в АС ППРБ.Карты"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "d1c3d5d93e094ad7ba3e5e248eef7e3c"
+        tid:
+          type: "string"
+          maxLength: 8
+          description: "Уникальный идентификатор терминала (добавляется в API v2.0.0)"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "12345678"
+        partner_order_number:
+          type: "string"
+          maxLength: 36
+          description: "Номер заказа в CRM Клиента (добавляется в API v2.0.0)"
+          pattern: "^.*$"
+          example: "7523478632634"
+      additionalProperties: false
+      description: "Запрос на получение статуса заказа"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "tid"
+        - "partner_order_number"
+    responseStatus:
+      type: "object"
+      example:
+        mid: "123456789123456"
+        tid: "12345678"
+        id_qr: "20305"
+        order_state: "Статус заказа"
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        error_code: "000001"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        mid:
+          type: "string"
+          maxLength: 15
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Уникальный идентификатор Торговой точки"
+          example: "123456789123456"
+        tid:
+          type: "string"
+          maxLength: 8
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Уникальный идентификатор терминала"
+          example: "12345678"
+        id_qr:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          example: "20305"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "ID заказа в АС ППРБ.Карты"
+          example: "720ade472cdd400d93e7e6a4f94e38d2"
+        order_state:
+          description: "Статус заказа"
+          type: "string"
+          maxLength: 20
+          enum: ["PAID", "CREATED", "REVERSED", "REFUNDED", "REVOKED", "DECLINED", "EXPIRED", "AUTHORIZED", "CONFIRMED", "ON_PAYMENT"]
+          example: "PAID"
+        order_operation_params:
+          type: "array"
+          minItems: 1
+          maxItems: 100000
+          description: "Блок с перечнем операций, привязанных к данному заказу с дет\
+              ализацией по каждой операции"
+          items:
+            type: "object"
+            properties:
+              operation_id:
+                type: "string"
+                maxLength: 50
+                pattern: "^[A-Za-z0-9_\\-]*$"
+                description: "Идентификатор операции в АС ППРБ.Карты "
+                example: "cf8f78a1-1e75-414e-95fc-8ce56932e5d9-0d1c07e8-abe9"
+              operation_date_time:
+                type: "string"
+                description: "Дата/Время регистрации заказа"
+                maxLength: 20
+                pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+                example: "2005-08-15T15:52:01Z"
+              rrn:
+                type: "string"
+                maxLength: 12
+                pattern: "^[A-Za-z0-9]*$"
+                description: "RRN операции"
+                example: "123456123456"
+              operation_type:
+                type: "string"
+                maxLength: 36
+                enum: ["PAY", "REVERSE", "REFUND"]
+                description: "Тип операции"
+                example: "REVERSE"
+              operation_sum:
+                type: "integer"
+                minimum: 0
+                maximum: 999999999999999
+                description: "Сумма операции в минимальных единицах Валюты"
+                example: 123
+              operation_currency:
+                type: "string"
+                maxLength: 3
+                pattern: "^[0-9]*$"
+                description: "Валюта операции, цифровой код по ISO 4217"
+                example: "643"
+              auth_code:
+                type: "string"
+                maxLength: 8
+                pattern: "^[A-Za-z0-9_\\-]*$"
+                description: "Код авторизации"
+                example: "12345678"
+              response_code:
+                type: "string"
+                maxLength: 2
+                pattern: "^[A-Za-z0-9_\\-]*$"
+                description: "Код выполнения запроса"
+                example: "Код выполнения запроса"
+              response_desc:
+                type: "string"
+                maxLength: 256
+                pattern: "^.*$"
+                description: "Описание кода выполнения запроса"
+                example: "Описание ошибки выполнения запроса"
+              client_name:
+                type: "string"
+                maxLength: 256
+                pattern: "^.*$"
+                description: "Маскированное Имя Отчество Ф. плательщика (добавляется в API v3.0.0)"
+                example: "Иван Иванович И."
+            additionalProperties: false
+            description: "Параметры операции"
+            required:
+              - "operation_id"
+              - "operation_date_time"
+              - "rrn"
+              - "operation_type"
+              - "operation_sum"
+              - "operation_currency"
+              - "auth_code"
+              - "response_code"
+        sbp_operation_params:
+          type: "object"
+          description: "Блок с перечнем параметров операции СБП. Передается только для операции оплаты через СБП (добавляется в API v3.0.0)"
+          properties:
+            sbp_operation_id:
+              type: "string"
+              maxLength: 50
+              description: "Идентификатор операции в СБП"
+              pattern: "^[A-Za-z0-9_\\-]*$"
+              example: "B105600390167601000004681598593B"
+            sbp_masked_payer_id:
+              type: "string"
+              maxLength: 36
+              description: "Маскированный идентификатор плательщика"
+              pattern: "^[A-Za-z0-9_\\-\\s\\+()\\*]*$"
+              example: "*********6731"
+          additionalProperties: false
+          required:
+            - "sbp_operation_id"
+            - "sbp_masked_payer_id"
+        error_code:
+          type: "string"
+          maxLength: 6
+          description: "Код ошибки"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "123456"
+        error_description:
+          type: "string"
+          pattern: "^.*$"
+          maxLength: 1024
+          description: "Описание ошибки выполнения запроса"
+          example: "Описание ошибки выполнения запроса"
+      additionalProperties: false
+      description: "Ответ на запрос по созданию заказа"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "error_code"
+    requestRevoke:
+      type: "object"
+      example:
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        order_id: "000001"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "ID заказа в АС ППРБ.Карты"
+          example: "720ade472cdd400d93e7e6a4f94e38d2"
+      additionalProperties: false
+      description: "Запрос на отмену до проведения финансовой операции"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "order_id"
+    responseRevoke:
+      type: "object"
+      example:
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        error_code: "000001"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "ID заказа в АС ППРБ.Карты"
+          example: "720ade472cdd400d93e7e6a4f94e38d2"
+        order_state:
+          type: "string"
+          maxLength: 20
+          enum: ["PAID", "CREATED", "REVERSED", "REFUNDED", "REVOKED", "DECLINED", "EXPIRED", "AUTHORIZED", "CONFIRMED", "ON_PAYMENT"]
+          description: "Статус заказа"
+          example: "CREATED"
+        error_code:
+          type: "string"
+          maxLength: 6
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Код выполнения запроса"
+          example: "Код выполнения запроса"
+        error_description:
+          type: "string"
+          pattern: "^.*$"
+          maxLength: 1024
+          description: "Описание ошибки выполнения запроса"
+          example: "Описание ошибки выполнения запроса"
+      additionalProperties: false
+      description: "Ответ на запрос на отмену до проведения финансовой операции"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "error_code"
+    requestCancel:
+      type: "object"
+      example:
+        rq_uid: "ac11cA1CEae1D1111dABf1fD1Bb0acAd"
+        rq_tm: "2005-08-15T15:52:01Z"
+        operation_id: "cf8f78a1-1e75-414e-95fc-8ce56932e5d9-0d1c07e8-abe9"
+        order_id: "37f894f034f6466580a79c8f36c0bc84"
+        id_qr: "1000100051"
+        cancel_operation_sum: 48000
+        operation_currency: "643"
+        auth_code: "123"
+        tid: "12345678"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "ID заказа в АС ППРБ.Карты"
+          example: "720ade472cdd400d93e7e6a4f94e38d2"
+        operation_type:
+          type: "string"
+          maxLength: 36
+          description: "Тип операции (добавляется в API v2.0.0)"
+          default: "REFUND"
+          enum: ["REFUND", "REVERSE"]
+          example: "REFUND"
+        operation_id:
+          type: "string"
+          maxLength: 50
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Идентификатор операции (оплаты/возврата) в АС ППРБ.Карты, которую требуется отменить"
+          example: "cf8f78a1-1e75-414e-95fc-8ce56932e5d9-0d1c07e8-abe9"
+        auth_code:
+          type: "string"
+          maxLength: 8
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Код авторизации"
+          example: "00000000"
+        id_qr:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          example: "1000100051"
+        tid:
+          type: "string"
+          maxLength: 8
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Уникальный идентификатор терминала (добавляется в API v2.0.0)"
+          example: "1000100051"
+        cancel_operation_sum:
+          type: "integer"
+          minimum: 0
+          maximum: 999999999999999
+          maxLength: 15
+          description: "Сумма отмены/возврата в минимальных единицах Валюты"
+          example: 1209
+        operation_currency:
+          type: "string"
+          pattern: "^[0-9]*$"
+          maxLength: 3
+          description: "Валюта операции, цифровой код по ISO 4217"
+          example: "643"
+        sbp_payer_id:
+          type: "string"
+          maxLength: 36
+          description: "Идентификатор Получателя. Возможные значения: Номер мобильного телефона клиента физ. лица в формате '+79001234567' (добавляется в API v3.0.0)"
+          pattern: "^[A-Za-z0-9_\\-\\s\\+()\\*]*$"
+          example: "+79001234567"
+        operation_description:
+          type: "string"
+          maxLength: 140
+          description: "Описание назначения платежа (добавляется в API v3.0.0)"
+          pattern: "^.*$"
+          example: "Описание назначения платежа"
+      additionalProperties: false
+      description: "Запрос на отмену операции"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "order_id"
+        - "operation_id"
+        - "auth_code"
+        - "id_qr"
+        - "tid"
+        - "cancel_operation_sum"
+        - "operation_currency"
+    responseCancel:
+      type: "object"
+      example:
+        rq_uid: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm: "2005-08-15T15:52:01Z"
+        error_code: "000001"
+      properties:
+        rq_uid:
+          type: "string"
+          minLength: 32
+          maxLength: 32
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          description: "Уникальный идентификатор запроса"
+          example: "d0c5d5d03e074ad7ba2e2e248eef7e9c"
+        rq_tm:
+          type: "string"
+          maxLength: 20
+          description: "Дата/Время формирования запроса"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+        order_id:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Идентификатор операции (оплаты/возврата) в АС ППРБ.Карты, которую требуется отменить"
+          example: "720ade472cdd400d93e7e6a4f94e38d2"
+        order_status:
+          type: "string"
+          maxLength: 20
+          enum: ["PAID", "CREATED", "REVERSED", "REFUNDED", "REVOKED", "DECLINED", "EXPIRED", "AUTHORIZED", "CONFIRMED", "ON_PAYMENT"]
+          description: "Статус заказа"
+          example: "CREATED"
+        operation_id:
+          type: "string"
+          maxLength: 50
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Уникальный идентификатор операции в ППРБ.Карты (прямой/возврата), которую необходимо отменить"
+          example: "cf8f78a1-1e75-414e-95fc-8ce56932e5d9-0d1c07e8-abe9"
+        operation_date_time:
+          type: "string"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+          description: "Дата/время операции отмены/возврата"
+        operation_type:
+          type: "string"
+          maxLength: 36
+          enum: ["PAY", "REVERSE", "REFUND"]
+          description: "Тип операции"
+          example: "PAY"
+        operation_sum:
+          type: "integer"
+          minimum: 0
+          maximum: 999999999999999
+          description: "Сумма операции в минимальных единицах Валюты"
+          example: "123"
+        operation_currency:
+          type: "string"
+          maxLength: 3
+          pattern: "^[0-9]*$"
+          description: "Валюта операции, цифровой код по ISO 4217"
+          example: "643"
+        auth_code:
+          type: "string"
+          maxLength: 8
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Код авторизации"
+          example: "12345678"
+        rrn:
+          type: "string"
+          maxLength: 12
+          pattern: "^[A-Za-z0-9]*$"
+          description: "RRN операции"
+          example: "962001894699"
+        tid:
+          type: "string"
+          maxLength: 8
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Уникальный идентификатор терминала"
+          example: "12345678"
+        id_qr:
+          type: "string"
+          maxLength: 36
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          example: "123456789123456789"
+        error_code:
+          type: "string"
+          maxLength: 6
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          description: "Код выполнения запроса"
+          example: "000001"
+        error_description:
+          type: "string"
+          maxLength: 1024
+          pattern: "^.*$"
+          description: "Описание ошибки выполнения запроса"
+          example: "Описание ошибки выполнения запроса"
+        sbp_operation_params:
+          type: "object"
+          description: "Блок с перечнем параметров операции СБП. Передается только для операции оплаты через СБП (добавляется в API v3.0.0)"
+          properties:
+            sbp_cancel_operation_id:
+              type: "string"
+              maxLength: 50
+              pattern: "^[A-Za-z0-9_\\-]*$"
+              description: "Идентификатор операции в СБП"
+              example: "D105600390167601000004681598593B"
+            sbp_merchant_name:
+              type: "string"
+              maxLength: 36
+              description: "Наименование юр. лица торгово-сервисного предприятия"
+              pattern: "^.*$"
+              example: "OOO \"Ромашка\""
+          additionalProperties: false
+          required:
+            - "sbp_cancel_operation_id"
+            - "sbp_merchant_name"
+      additionalProperties: false
+      description: "Ответ на запрос на отмену до проведения финансовой операции"
+      required:
+        - "rq_uid"
+        - "rq_tm"
+        - "error_code"
+    requestRegistry:
+      required:
+        - rqUid
+        - rqTm
+        - idQR
+        - startPeriod
+        - endPeriod
+        - registryType
+      type: "object"
+      description: "Запрос"
+      properties:
+        rqUid:
+          type: "string"
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          maxLength: 32
+          description: "Уникальный идентификатор запроса"
+          example: "ac11cA1CEae1D1111dABf1fD1Bb0acAd"
+        rqTm:
+          type: "string"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          description: "ДатаВремя формирования запроса"
+          example: "2005-08-15T15:52:01Z"
+        idQR:
+          type: "string"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          maxLength: 36
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          example: "1000100051"
+        startPeriod:
+          type: "string"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+          description: "Дата/время начала периода: дата создания заказа в АС Банка (ППРБ Ecom) по Мск."
+        endPeriod:
+          type: "string"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          example: "2005-08-15T15:52:01Z"
+          description: "Дата/время конца периода: дата создания заказа в АС Банка (ППРБ Ecom) по Мск."
+        registryType:
+          type: "string"
+          maxLength: 20
+          description: "Тип реестра. Возможные значения: QUANTITY/REGISTRY. Где QUANTITY – агрегация по количеству операций, сумме. REGISTRY - детальный отчет по заказам"
+          enum: [QUANTITY,REGISTRY]
+          example: "REGISTRY"
+      additionalProperties: false
+      example:
+        rqUid: "ac11cA1CEae1D1111dABf1fD1Bb0acAd"
+        rqTm: "2005-08-15T15:52:01Z"
+        idQR: "idQr"
+        startPeriod: "2005-08-15T15:52:01Z"
+        endPeriod: "2005-08-15T15:52:01Z"
+        registryType: "REGISTRY"
+    responseRegistry:
+      required:
+        - rqUid
+        - rqTm
+        - errorCode
+      example:
+        rqUid: "ac11cA1CEae1D1111dABf1fD1Bb0acAd"
+        rqTm: "2005-08-15T15:52:01Z"
+        errorCode: "000000"
+      type: "object"
+      description: "Ответ"
+      additionalProperties: false
+      properties:
+        rqUid:
+          type: "string"
+          maxLength: 32
+          description: "Уникальный идентификатор запроса"
+          example: ac11cA1CEae1D1111dABf1fD1Bb0acAd
+          pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+        rqTm:
+          type: "string"
+          maxLength: 20
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+          description: "ДатаВремя формирования запроса"
+          example: "2005-08-15T15:52:01Z"
+        tid:
+          type: "string"
+          maxLength: 8
+          description: "Уникальный идентификатор терминала"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "20163714"
+        idQR:
+          type: "string"
+          maxLength: 36
+          description: "IdQR устройства или tid Уникальный идентификатор терминала для СБП, на котором сформирован заказ"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "1000100051"
+        quantityData:
+          required:
+            - totalCount
+            - totalPaymentAmount
+            - totalRefundAmount
+            - totalAmount
+          type: "object"
+          description: "Заполняется в случае, если в запросе RegistryType = QUANTITY"
+          example:
+            totalCount: 1000
+            totalPaymentAmount: 400000
+            totalRefundAmount:  20000
+            totalAmount: 380000
+          additionalProperties: false
+          properties:
+            totalCount:
+              type: "integer"
+              maximum: 9999999999
+              minimum: 0
+              description: "Общее кол-во успешных операций"
+              example: 1000
+            totalPaymentAmount:
+              type: "integer"
+              description: "Общая сумма покупок: сумма покупок (только успешные)."
+              example: 400000
+              maximum: 999999999999999
+              minimum: 0
+            totalRefundAmount:
+              type: "integer"
+              description: "ID заказа в АС ППРБ.Карты (Сбербанк)"
+              example: 20000
+              maximum: 999999999999999
+              minimum: 0
+            totalAmount:
+              type: "integer"
+              description: "Общая сумма покупок: сумма покупок за вычетом суммы возвратов и отмен (только успешные)"
+              maximum: 999999999999999
+              minimum: 0
+              example: 380000
+        errorCode:
+          type: "string"
+          maxLength: 6
+          description: "Код выполнения запроса"
+          pattern: "^[A-Za-z0-9_\\-]*$"
+          example: "000000"
+        errorDescription:
+          type: "string"
+          maxLength: 1024
+          example: "ErrorDescription"
+          pattern: "^.*$"
+          description: "Описание ошибки выполнения запроса"
+        registryData:
+          example: "example"
+          type: "object"
+          description: "Заполняется в случае, если в запросе RegistryType = REGISTRY"
+          additionalProperties: false
+          properties:
+            orderParams:
+              example: "Блок с перечнем заказов"
+              type: "object"
+              description: "Блок с перечнем заказов"
+              properties:
+                orderParam:
+                  type: "array"
+                  maxItems: 1000
+                  description: "Перечень заказов"
+                  example: "registryData array"
+                  items:
+                    required:
+                      - orderId
+                      - partnerOrderNumber
+                      - amount
+                      - currency
+                      - orderCreateDate
+                      - orderState
+                    type: "object"
+                    description: "Блок с детальными параметрами заказа"
+                    additionalProperties: false
+                    example:
+                      orderId: "d06112b97ed94215b77714e11c340c7b"
+                      partnerOrderNumber: "24030115068321"
+                      amount: "48001"
+                      currency: "643"
+                      orderCreateDate: "2021-03-31T10:53:01Z"
+                      orderState: "PAID"
+                    properties:
+                      orderId:
+                        type: "string"
+                        maxLength: 36
+                        description: "ID заказа в АС ППРБ.Карты"
+                        example: "d06112b97ed94215b77714e11c340c7b"
+                        pattern: "^[A-Za-z0-9_\\-]*$"
+                      partnerOrderNumber:
+                        type: "string"
+                        maxLength: 36
+                        description: "Номер заказа в АС Партнера"
+                        pattern: "^.*$"
+                        example: "24030115068321"
+                      amount:
+                        type: "integer"
+                        maxLength: 15
+                        maximum: 999999999999999
+                        minimum: 0
+                        description: "Сумма заказа в минимальных единицах Валюты"
+                        example: 48001
+                      currency:
+                        type: "string"
+                        maxLength: 3
+                        description: "Валюта заказа, цифровой код по ISO 4217"
+                        pattern: "^[0-9]*$"
+                        example: "643"
+                      orderCreateDate:
+                        type: "string"
+                        maxLength: 20
+                        description: "ДатаВремя формирования заказа"
+                        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+                        example: "2021-03-31T10:53:01Z"
+                      orderState:
+                        type: "string"
+                        maxLength: 20
+                        description: "Статус заказа"
+                        example: "PAID"
+                        enum: ["PAID", "REVERSED", "REFUNDED"]
+                      orderOperationParams:
+                        type: "object"
+                        example: "orderOperationParams"
+                        description: "Блок с перечнем операций, привязанных к данному заказу с детализацией по каждой операции"
+                        properties:
+                          orderOperationParam:
+                            type: "array"
+                            example: "orderOperationParam"
+                            description: "Параметры операции. Отдаем информацию только по успешным операциям."
+                            maxItems: 1000
+                            items:
+                              type: "object"
+                              description: "Параметры операции. Отдаем информацию только по успешным операциям."
+                              required:
+                                - operationId
+                                - operationDateTime
+                                - rrn
+                                - operationType
+                                - operationSum
+                                - operationCurrency
+                                - authCode
+                                - responseCode
+                              example:
+                                operationId: "aa8a8779de9e4ca59d3922ed5e5e07fa"
+                                operationDateTime: "2020-03-19T19:00:39Z"
+                                rrn: "004302370695"
+                                operationType: "PAY"
+                                operationSum: "770"
+                                operationCurrency: "643"
+                                authCode: "370695"
+                                responseCode:  "00"
+                              additionalProperties: false
+                              properties:
+                                operationId:
+                                  type: "string"
+                                  maxLength: 50
+                                  description: "Идентификатор операции в АС Банка(ППРБ Ecom)"
+                                  pattern: "^[A-Za-z0-9_\\-]*$"
+                                  example: "cf8f78a1-1e75-414e-95fc-8ce56932e5d9-0d1c07e8-abe9"
+                                operationDateTime:
+                                  type: "string"
+                                  maxLength: 20
+                                  description: "ДатаВремя совершения операции"
+                                  pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+                                  example: "2020-03-19T19:00:39Z"
+                                rrn:
+                                  type: "string"
+                                  maxLength: 12
+                                  description: "RRN операции"
+                                  pattern: "^[A-Za-z0-9]*$"
+                                  example: "004302370695"
+                                operationType:
+                                  type: "string"
+                                  maxLength: 36
+                                  description: "Тип операции: PAY, REFUND, REVERSAL"
+                                  example: "PAY"
+                                  enum: ["PAY", "REVERSE", "REFUND", "SBP_PAY_ACKNOWL", "SBP_ACK_ONUS", "SBP_STATUS_OUT", "SBP_CREDIT_IN_RQ", "SBP_REFUND_IN_RQ"]
+                                operationSum:
+                                  type: "integer"
+                                  maxLength: 15
+                                  minimum: 0
+                                  maximum: 999999999999999
+                                  description: "Сумма операции в минимальных единицах Валюты"
+                                  example: 770
+                                operationCurrency:
+                                  type: "string"
+                                  maxLength: 3
+                                  description: "Валюта операции, цифровой код по ISO 4217"
+                                  pattern: "^[0-9]*$"
+                                  example: "643"
+                                authCode:
+                                  type: "string"
+                                  maxLength: 8
+                                  description: "Код авторизации"
+                                  pattern: "^[A-Za-z0-9_\\-]*$"
+                                  example: "370695"
+                                responseCode:
+                                  type: "string"
+                                  maxLength: 2
+                                  description: "Код успешности авторизации"
+                                  pattern: "^[A-Za-z0-9_\\-]*$"
+                                  example: "00"
+                                responseDesc:
+                                  type: "string"
+                                  maxLength: 256
+                                  description: "Описание кода ответа"
+                                  example: "ResponceDesc"
+                                  pattern: "^.*$"
+                                sbpOperationParams:
+                                  type: "object"
+                                  description: "Блок с перечнем параметров операции СБП. Передается только для операции оплаты через СБП (добавляется в API v3.0.0)"
+                                  properties:
+                                    sbpOperationId:
+                                      type: "string"
+                                      maxLength: 50
+                                      pattern: "^[A-Za-z0-9_\\-]*$"
+                                      description: "Идентификатор операции в СБП"
+                                      example: "B105600390167601000004681598593B"
+                                    sbpPayerId:
+                                      type: "string"
+                                      maxLength: 50
+                                      pattern: "^[A-Za-z0-9_\\-\\s\\+()\\*]*$"
+                                      example: "*********6731"
+                                      description: "Маскированный идентификатор плательщика"
+                                  additionalProperties: false
+                                  required:
+                                    - "sbpOperationId"
+                                    - "sbpPayerId"
+                        additionalProperties: false
+              additionalProperties: false
+
+# Powered by APIStudio

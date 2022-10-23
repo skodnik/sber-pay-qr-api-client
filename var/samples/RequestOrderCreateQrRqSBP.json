@@ -1,0 +1,20 @@
+{
+  "rq_uid": "06724f00e6fc4dbdbb866631e1e385df",
+  "rq_tm": "2022-04-04T14:28:22Z",
+  "member_id": "00000001",
+  "order_number": "1288986419034",
+  "order_create_date": "2022-04-04T14:28:22Z",
+  "order_params_type": [
+    {
+      "position_name": "Water Still",
+      "position_count": 2,
+      "position_sum": 10,
+      "position_description": "Water Still"
+    }
+  ],
+  "id_qr": "20188357",
+  "order_sum": 3,
+  "currency": "643",
+  "description": "Очень дорого",
+  "sbp_member_id": "100000000111"
+}

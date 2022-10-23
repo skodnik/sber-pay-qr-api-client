@@ -1,0 +1,25 @@
+{
+  "rq_uid": "06724f00e6fc4dbdbb866631e1e385df",
+  "rq_tm": "2022-03-14T17:37:50Z",
+  "member_id": "00000001",
+  "order_number": "2872489347704",
+  "order_create_date": "2021-12-08T08:16:01Z",
+  "order_params_type": [
+    {
+      "position_name": "Water StillWater",
+      "position_count": 2,
+      "position_sum": 10000,
+      "position_description": "Water Still"
+    },
+    {
+      "position_name": "Water StillWater",
+      "position_count": 2,
+      "position_sum": 10000,
+      "position_description": "Water Still"
+    }
+  ],
+  "id_qr": "1000100051",
+  "order_sum": 20000,
+  "currency": "643",
+  "description": "описание новое старое"
+}

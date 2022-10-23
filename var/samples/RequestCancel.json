@@ -1,0 +1,12 @@
+{
+    "rq_uid": "c0567a795bbd45659726288801e6b57c",
+    "rq_tm": "2022-03-14T12:32:57Z",
+    "operation_id": "ca8429884ee3481aa90ca1e8fee28307",
+    "operation_type": "REFUND",
+    "order_id": "136ab66215de4e9a81b393d138859482",
+    "id_qr": "1000100051",
+    "cancel_operation_sum": 11,
+    "operation_currency": "643",
+    "auth_code": "269025",
+    "tid": "20151881"
+}

@@ -1,0 +1,287 @@
+---
+openapi: 3.0.0
+info:
+  title: "Получение токена доступа"
+  version: "2.2.0"
+  description: "Получение access token для авторизации вызова API"
+servers:
+  - url: https://api.sberbank.ru:8443/prod/tokens/v2
+paths:
+  /oauth:
+    post:
+      summary: Получение OAuth токена
+      description: Получение OAuth токена
+      parameters:
+        - name: "Authorization"
+          in: "header"
+          schema:
+            type: string
+          required: true
+          description: |
+            Авторизационные данные. Необходимо в поле указать слово \"Basic\" и через пробел передать закодированные в BASE64 значения client id и client secret разделенные двоеточием (Basic client id:client secret).
+          example: Basic NWU3ZWU4MGEtNjcyNC00MDc4LThlZTQtMWRkNjM3MDY5NTRmOjVmMTNlMzVmLWQ0OTEtNGU1My04OTk2LTVhMWQ2ZTE1OGM0ZCAgDQo=
+        - name: "RqUID"
+          schema:
+            type: string
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          required: true
+          in: "header"
+          description: |
+            Уникальный идентификатор запроса для получения токена
+          example: 25Ec70328e2CE4DF39e828E1dF75EFa0
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  default: "client_credentials"
+                  description: |
+                    Способ получения доступа (тип разрешения). Необходилмо использовать значение client_credentials
+                  example: client_credentials
+                scope:
+                  type: string
+                  description: |
+                    Область видимости (scope), которая предоставляется Клиенту. Необходимо передать значение, разрешенной области видимости.
+                  example: "https://api.sberbank.ru/scope.example"
+              required:
+                - grant_type
+                - scope
+      responses:
+        200:
+          description: "200 OK"
+          headers:
+            RqUID:
+              schema:
+                type: string
+                pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthTokenResponse'
+        400:
+          description: "Client Error 400 Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        401:
+          description: "Client Error 401 Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        405:
+          description: "Method Not Allowed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MethodNotAllowed'
+        500:
+          description: "Server Error 500 Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /oidc:
+    post:
+      summary: Получение OIDC токена
+      description: Получение OIDC токена
+      parameters:
+        - name: "RqUID"
+          in: "header"
+          schema:
+            type: string
+            pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          required: true
+          description: "Уникальный идентификатор запроса для получения токена"
+          example: "25Ec70328e2CE4DF39e828E1dF75EFa0"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  default: "authorization_code"
+                  description: |
+                    Способ получения доступа (тип разрешения). Необходилмо использовать значение authorization_code
+                  example:  "authorization_code"
+                scope:
+                  type: string
+                  description: |
+                    Область видимости (scope), которая предоставляется Клиенту. Необходимо передать значение,
+                    разрешенной области видимости.
+                  example: "https://api.sberbank.ru/scope.example"
+                client_id:
+                  type: string
+                  description: |
+                    Уникальный идентификатор клиента
+                  example: "5e7ee80a-6724-4078-8ee4-1dd63706954f"  
+                client_secret:
+                  type: string
+                  description: |
+                    Пароль Партнёра, используемый для его аутентификации в системе Банка по API
+                  example: "5f13e35f-d491-4e53-8996-5a1d6e158c4d"  
+                code:
+                  type: string
+                  description: |
+                    Код авторзации, полученный на Authorization endpoint. Обязателен для grant_type = authorization_code.
+                  example: "FC49F1EA-245A-0FCD-2077-F3F73A205124"  
+                redirect_uri:
+                  type: string
+                  description: |
+                    Адрес перенаправления. Значение данного поля должно входить в список redirectURI Oauth,
+                    разрешенных данному приложению и должно совпадать со значением redirect_uri
+                    в запросе на Authorization endpoint.
+                  example: "https://testapi.ru/"
+                code_verifier:
+                  type: string
+                  description: |
+                    Значение кода верификации.
+                  example: "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"  
+              required:
+                - grant_type
+                - client_id
+                - client_secret
+                - code
+                - redirect_uri
+      responses:
+        200:
+          description: "200 OK"
+          headers:
+            RqUID:
+              schema:
+                type: string
+                pattern: "^(([0-9]|[a-f]|[A-F]){32})$"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OidcTokenResponse'
+        400:
+          description: "Client Error 400 Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        401:
+          description: "Client Error 401 Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        405:
+          description: "Method Not Allowed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MethodNotAllowed'
+        500:
+          description: "Server Error 500 Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+components:
+  schemas:
+    BasicTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          format: uuid
+        expires_in:
+          type: integer
+        scope:
+          type: string
+        session_state:
+          type: string
+        token_type:
+          type: string
+      required:
+        - access_token
+        - expires_in
+        - scope
+        - session_state
+        - token_type
+    OAuthTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/BasicTokenResponse'
+    OidcTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/BasicTokenResponse'
+        - type: object
+          required:
+            - id_token
+          properties:
+            id_token:
+              type: string
+    BasicErrorResponse:
+      type: object
+      properties:
+        moreInformation:
+          type: string
+      required:
+        - moreInformation
+    BadRequest:
+      allOf:
+        - $ref: '#/components/schemas/BasicErrorResponse'
+        - type: object
+          properties:
+            httpCode:
+              type: integer
+              default: 400
+            httpMessage:
+              type: string
+              default: "Bad Request"
+          required:
+            - httpCode
+            - httpMessage
+    Unauthorized:
+      allOf:
+        - $ref: '#/components/schemas/BasicErrorResponse'
+        - type: object
+          properties:
+            httpCode:
+              type: integer
+              default: 401
+            httpMessage:
+              type: string
+              default: "Unauthorized"
+          required:
+            - httpCode
+            - httpMessage
+    MethodNotAllowed:
+      allOf:
+        - $ref: '#/components/schemas/BasicErrorResponse'
+        - type: object
+          properties:
+            httpCode:
+              type: integer
+              default: 405
+            httpMessage:
+              type: string
+              default: "Method Not Allowed"
+          required:
+            - httpCode
+            - httpMessage
+    InternalServerError:
+      allOf:
+        - $ref: '#/components/schemas/BasicErrorResponse'
+        - type: object
+          properties:
+            httpCode:
+              type: integer
+              default: 500
+            httpMessage:
+              type: string
+              default: "Internal server error"
+          required:
+            - httpCode
+            - httpMessage

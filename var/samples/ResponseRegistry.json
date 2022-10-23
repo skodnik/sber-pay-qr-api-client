@@ -1,0 +1,99 @@
+{
+  "registryData": {
+    "orderParams": {
+      "orderParam": [
+        {
+          "amount": 10000,
+          "orderCreateDate": "2022-03-14T08:51:39Z",
+          "orderOperationParams": {
+            "orderOperationParam": [
+              {
+                "authCode": "651662",
+                "operationDateTime": "2022-03-14T11:51:45Z",
+                "operationId": "8aa51b7a012d42b6b37820068e13dda7",
+                "operationType": "PAY",
+                "operationCurrency": "643",
+                "operationSum": 10000,
+                "rrn": "207388423368",
+                "responseCode": "00"
+              }
+            ]
+          },
+          "orderId": "e2408f3e74fa4b23bd4b70ace0a4f0f0",
+          "partnerOrderNumber": "20220314085139",
+          "currency": "643",
+          "orderState": "PAID"
+        },
+        {
+          "amount": 10000,
+          "orderCreateDate": "2022-03-14T11:39:13Z",
+          "orderOperationParams": {
+            "orderOperationParam": [
+              {
+                "authCode": "974011",
+                "operationDateTime": "2022-03-14T14:39:16Z",
+                "operationId": "6057ec1ab8a14297a43579137919ed19",
+                "operationType": "PAY",
+                "operationCurrency": "643",
+                "operationSum": 10000,
+                "rrn": "207388423679",
+                "responseCode": "00"
+              },
+              {
+                "authCode": "073318",
+                "operationDateTime": "2022-03-14T14:39:18Z",
+                "operationId": "ea4c0a1fce484576b1d9a89bc45cb7e0",
+                "operationType": "REFUND",
+                "operationCurrency": "643",
+                "operationSum": 10000,
+                "rrn": "305197073318",
+                "responseCode": "00"
+              }
+            ]
+          },
+          "orderId": "44183236e004468496fa7cd0ee28b2f1",
+          "partnerOrderNumber": "20220314113913",
+          "currency": "643",
+          "orderState": "REFUNDED"
+        },
+        {
+          "amount": 10000,
+          "orderCreateDate": "2022-03-14T12:01:02Z",
+          "orderOperationParams": {
+            "orderOperationParam": [
+              {
+                "authCode": "153305",
+                "operationDateTime": "2022-03-14T15:01:06Z",
+                "operationId": "9267c3e8752346a59d5d307b8f26bb77",
+                "operationType": "PAY",
+                "operationCurrency": "643",
+                "operationSum": 10000,
+                "rrn": "207388423731",
+                "responseCode": "00"
+              },
+              {
+                "authCode": "000000",
+                "operationDateTime": "2022-03-14T15:01:08Z",
+                "operationId": "08aabeb96f15485b900eaac58142d188",
+                "operationType": "REVERSE",
+                "operationCurrency": "643",
+                "operationSum": 10000,
+                "rrn": "207388423731",
+                "responseCode": "00"
+              }
+            ]
+          },
+          "orderId": "dc90387bce7042309155b087fa28184a",
+          "partnerOrderNumber": "20220314120102",
+          "currency": "643",
+          "orderState": "REVERSED"
+        }
+      ]
+    }
+  },
+  "errorCode": "000000",
+  "rqUid": "1c120e9ba5234b3abc90a685c1c46582",
+  "rqTm": "2022-03-14T17:27:42Z",
+  "idQR": "1000101124",
+  "tid": "20163714"
+}
