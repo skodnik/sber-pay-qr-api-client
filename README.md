@@ -24,7 +24,7 @@
 ## Установка библиотеки
 
 ```bash
-composer require skodnik/sber-pay-qr-api-client-dev
+composer require vlsv/sber-pay-qr-api-client
 ```
 
 ## Получение сертификата
