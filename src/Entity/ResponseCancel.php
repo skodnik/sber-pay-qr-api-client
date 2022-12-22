@@ -6,7 +6,7 @@ namespace Vlsv\SberPayQrApiClient\Entity;
 
 use DateTimeImmutable;
 
-class ResponseCancel implements RequestInterface
+class ResponseCancel implements ResponseInterface
 {
     /** Уникальный идентификатор запроса. */
     private string $rqUid;
